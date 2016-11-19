@@ -31,7 +31,7 @@ def catchKeyboardInterrupt(fn):
         try:
             return fn(*args)
         except KeyboardInterrupt:
-            self._show_info('[*] 强制退出程序')
+            logging.debug('[*] 强制退出程序')
     return wrapper
 
 def _decode_list(data):
