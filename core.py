@@ -872,22 +872,22 @@ class Core(object):
                 self._show_info('[*] 退出微信')
                 exit()
             elif text[:2] == '->':
-                [name, word] = text[2:].split(':')
+                [name, word] = text[2:].split('~:~')
                 if name == 'all':
                     self.sendMsgToAll(word)
                 else:
                     self.sendMsg(name, word)
             elif text[:3] == 'm->':
-                [name, file] = text[3:].split(':')
+                [name, file] = text[3:].split('~:~')
                 self.sendMsg(name, file, True)
             elif text[:3] == 'f->':
                 self._show_info('发送文件')
             elif text[:3] == 'i->':
-                [name, file_name] = text[3:].split(':')
+                [name, file_name] = text[3:].split('~:~')
                 self.sendImg(name, file_name)
                 self._show_info('发送图片')
             elif text[:3] == 'e->':
-                [name, file_name] = text[3:].split(':')
+                [name, file_name] = text[3:].split('~:~')
                 self.sendEmotion(name, file_name)
                 self._show_info('发送表情')
 
