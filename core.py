@@ -966,7 +966,10 @@ class Core(object):
                                               dstName.strip(), content.replace('<br/>', '\n')))
 
     def _save_log(self,info):
-        fn = 'saved/message/msg' + str(int(random.random() * 1000)) + '.json'
+        dirName = 'saved/message'
+        if not os.path.exists(dirName):
+            os.makedirs(dirName)
+        fn = dirName + 'msg' + str(int(random.random() * 10)) + '.json'
         with open(fn, 'w') as f:
             f.write(json.dumps(info))
         self._show_info('[*] 该消息已储存到文件: %s' % (fn))
