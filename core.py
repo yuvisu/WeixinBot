@@ -19,13 +19,15 @@ import httplib
 from collections import defaultdict
 from urlparse import urlparse
 from lxml import html
+from bot import Bot
 #import pdb
 
 # for media upload
 import mimetypes
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
-
+reload(sys)
+sys.setdefaultencoding("utf-8")
 def catchKeyboardInterrupt(fn):
     def wrapper(*args):
         try:
@@ -112,7 +114,7 @@ class Core(object):
                              'voip', 'blogappweixin', 'weixin', 'brandsessionholder', 'weixinreminder', 'wxid_novlwrv3lqwv11', 'gh_22b87fa7cb3c', 'officialaccounts', 'notification_messages', 'wxid_novlwrv3lqwv11', 'gh_22b87fa7cb3c', 'wxitil', 'userexperience_alarm', 'notification_messages']
         self.TimeOut = 20  # 同步最短时间间隔（单位：秒）
         self.media_count = -1
-
+        self.bot = Bot()
         self.cookie = cookielib.CookieJar()
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookie))
         opener.addheaders = [('User-agent', self.user_agent)]
@@ -639,20 +641,19 @@ class Core(object):
     def handleMsg(self, r):
         for msg in r['AddMsgList']:
             self._show_info('[*] 你有新的消息，请注意查收')
-
             msgType = msg['MsgType']
             name = self.getUserRemarkName(msg['FromUserName'])
             content = msg['Content'].replace('&lt;', '<').replace('&gt;', '>')
             msgid = msg['MsgId']
 
+            ans = self.bot.action(msgType, content)
             if msgType == 1:
                 raw_msg = {'raw_msg': msg}
                 self._showMsg(raw_msg,"[*] 文字信息")
                 self._save_log(msg)
+                self._show_info("回答:->"+ans)
                 if self.autoReplyMode:
-                    ans = '[hugo bot 自动回复] 睡觉中，晚安'
-                    if self.webwxsendmsg(ans, msg['FromUserName']):
-                        print ans
+                    if self.webwxsendmsg("[hugo bot serve for you]"+ans, msg['FromUserName']):
                         logging.info('自动回复: ' + ans)
                     else:
                         print '自动回复失败'
@@ -758,9 +759,9 @@ class Core(object):
                 # TODO
                 redEnvelope += 1
                 self._show_info('[*] 收到疑似红包消息 %d 次' % redEnvelope)
-            '''
             if (time.time() - self.lastCheckTs) <= 20:
                 time.sleep(time.time() - self.lastCheckTs)
+            '''
     ### supervise and auto-reply module end
 
     ### action module start
@@ -966,10 +967,10 @@ class Core(object):
                                               dstName.strip(), content.replace('<br/>', '\n')))
 
     def _save_log(self,info):
-        dirName = 'saved/message'
+        dirName = 'saved/message/'
         if not os.path.exists(dirName):
             os.makedirs(dirName)
-        fn = dirName + 'msg' + str(int(random.random() * 10)) + '.json'
+        fn = dirName + 'msg' + str(int(time.time())) + '.json'
         with open(fn, 'w') as f:
             f.write(json.dumps(info))
         self._show_info('[*] 该消息已储存到文件: %s' % (fn))
