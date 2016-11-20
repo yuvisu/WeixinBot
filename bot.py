@@ -23,7 +23,7 @@ class Bot:
 
     def _simsimi(self, word):
 
-        key = '25049e10-0af9-4209-b773-9147f1eb60aa'
+        key = '';
         url = 'http://sandbox.api.simsimi.com/request.p?key=%s&lc=ch&ft=0.0&text=%s' % (
             key, word)
         print url
